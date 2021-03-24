@@ -24,8 +24,6 @@
     <div class="game__content">
       <draggable class="game__items"
                 group="digits"
-                direction="vertical"
-                :animation="200"
                 v-model="digits"
                 @start="onStart"
                 @end="onEnd"
@@ -36,6 +34,7 @@
             :key="index">{{digit.value}}
         </div>
       </draggable>
+      <div v-if="win" class="game__win"><img src="../assets/YouWon.png" alt="you won"></div>
     </div>
     <div class="game__footer">
       <button class="button bg-primary text-white" @click="startNewGame">Начать новую игру</button>
@@ -58,7 +57,8 @@ export default {
       movesNumber: 0,
       time: "00:00",
       timeBegan: null,
-      stopWatchInterval: null
+      stopWatchInterval: null,
+      win: false
     }
   },
   methods: {
@@ -90,8 +90,8 @@ export default {
         this.digits = _items;
         this.movesNumber++;
 
-        let isWin = this.isWin();
-        if (isWin) {
+        this.win = this.isWin();
+        if (this.win) {
           this.stopWatchStop();
           this.digits[this.digits.length - 1].value = 16;
         }
@@ -152,6 +152,8 @@ export default {
       this.digits = this.getShiffleDigits();
       this.stopWatchReset();
       this.stopWatchInit();
+      this.movesNumber = 0;
+      this.win = false;
     }
   },
   mounted() {
@@ -229,6 +231,17 @@ export default {
   &__content {
     padding: 15px 15px 5px;
     background: gray;
+    position: relative;
+  }
+  &__win {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: 2s showWin;
+    img {
+      width: 300px;
+    }
   }
   &__footer {
     overflow: hidden;
@@ -242,6 +255,18 @@ export default {
     border: none;
     outline: none;
     margin: 40px auto;
+  }
+}
+
+@keyframes showWin {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 </style>
